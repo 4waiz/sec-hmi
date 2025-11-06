@@ -88,7 +88,7 @@
     <!-- Language -->
     <section class="card card--language">
       <div class="card-head">
-        <img class="icon" src="/assets/frame7.svg" alt="Language" width="24" height="24" />
+        <img class="icon" src="/assets/frame6.svg" alt="Language" width="24" height="24" />
         <h2 class="h2">Language</h2>
       </div>
 
@@ -138,9 +138,9 @@
     <!-- Network -->
     <section class="card card--network">
       <div class="card-head">
-        <img class="icon" src="/assets/frame.svg" alt="Network" width="24" height="24" />
+        <img class="icon" src="/assets/frame4.svg" alt="Network" width="24" height="24" />
         <h2 class="h2">Network Configuration</h2>
-        <img class="icon ml8" src="/assets/frame6.svg" alt="Locked" width="24" height="24" />
+        <img class="icon ml8" src="/assets/frame7.svg" alt="Locked" width="24" height="24" />
       </div>
 
       <div class="label">Machine IPs:</div>
@@ -223,8 +223,9 @@
     <!-- Logs -->
     <section class="card card--logs">
       <div class="card-head">
+        <img class="icon ml8" src="/assets/frame8.svg" alt="Locked" width="24" height="24" />
         <h2 class="h2">Machine Logs</h2>
-        <img class="icon ml8" src="/assets/frame6.svg" alt="Locked" width="24" height="24" />
+        <img class="icon ml8" src="/assets/frame.svg" alt="Locked" width="24" height="24" />
       </div>
 
       <div class="row gap">
@@ -272,37 +273,42 @@
 <style>
   /* Responsive canvas */
   .page{
-    width: 100%;
-    max-width: 1080px;
-    margin: 0 auto;
-    padding: 16px 28px 18px;
+    width: calc(100vw / var(--ui-scale));
+    margin: 0;
+    padding: 8px 16px;
     background:#fff;
     box-sizing:border-box;
-    height: 100vh;
+    height: calc(100vh / var(--ui-scale));
     display:flex;
     flex-direction:column;
+    gap:8px;
+    transform: scale(var(--ui-scale));
+    transform-origin: top left;
+    overflow:hidden;
   }
   @media (max-width: 900px){
     .page{
+      transform:none;
+      width: 100%;
       height:auto;
-      min-height:100vh;
       padding: clamp(16px, 4vw, 24px);
+      gap:16px;
     }
   }
 
   /* Header */
-  .topbar{ display:flex; align-items:flex-start; gap:16px; }
+  .topbar{ display:flex; align-items:flex-start; gap:12px; }
   .iconbtn{
-    width:46px; height:46px; display:grid; place-items:center;
+    width:40px; height:40px; display:grid; place-items:center;
     border:1px solid var(--muted); border-radius:8px; background:#fff;
   }
   .titleblock{ flex:1; }
   .meta{ margin-top:10px; font-size:15px; }
-  .h1{ font-size: clamp(28px, 2.8vw, 34px); line-height:1.1; margin:0; }
-  .h2{ font-size: clamp(18px, 2vw, 24px); margin:0; }
+  .h1{ font-size: clamp(30px, 3vw, 36px); line-height:1.1; margin:0; }
+  .h2{ font-size: clamp(19px, 2.2vw, 24px); margin:0; }
 
   .rule{
-    margin: 14px 0 10px;
+    margin: 10px 0 8px;
     height:1px; border:none; background:var(--border);
   }
 
@@ -310,23 +316,23 @@
   .grid{
     display:grid;
     grid-template-columns: 1fr;
-    gap: 20px;
+    gap: 10px;
     flex:1 1 auto;
     min-height:0;
   }
   @media (min-width: 900px){
     .grid{
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      column-gap: 40px;
-      row-gap: 22px;
-      grid-template-rows: auto auto 1fr;
+      column-gap: 14px;
+      row-gap: 10px;
+      
       grid-template-areas:
         "language brightness"
         "network backup"
         "logs backup";
       align-content:stretch;
     }
-    .grid > .card{ height:100%; }
+    .grid > .card{ height:auto; }
     .card--language{ grid-area: language; }
     .card--brightness{ grid-area: brightness; }
     .card--network{ grid-area: network; }
@@ -338,9 +344,12 @@
   .card{
     display:flex;
     flex-direction:column;
+    justify-content:space-between;
+    padding-bottom:0;
+    gap:6px;
   }
   .card-head{
-    display:flex; align-items:center; gap:10px; margin-bottom:14px;
+    display:flex; align-items:center; gap:8px; margin-bottom:2px;
   }
   .ml8{ margin-left:8px; }
   .small{ font-size:12.5px; margin: 0 0 12px; }
@@ -351,7 +360,7 @@
   .mt12{ margin-top:12px; }
 
   .pill{
-    height:42px; padding:0 20px;
+    height:40px; padding:0 18px;
     border-radius:24px;
     border:1px solid var(--muted);
     color:var(--muted); background:#fff;
@@ -374,14 +383,14 @@
   .lang-toggle.lang-en .pill:first-child .pill-dot,
   .lang-toggle.lang-ar .pill:last-child .pill-dot{ display:grid; }
   .pill-dot{
-    width:24px; height:24px; border-radius:999px;
+    width:20px; height:20px; border-radius:999px;
     display:grid; place-items:center;
     background:var(--brand);
     border:1px solid #fff;
   }
 
   /* Slider area */
-  .slider-wrap{ width: 100%; max-width: 330px; height: 34px; display:flex; align-items:center; }
+  .slider-wrap{ width: 100%; max-width: 320px; height: 32px; display:flex; align-items:center; }
 
   /* Track via background gradient on the input element itself */
   .slider{
@@ -428,59 +437,49 @@
   transition: transform .12s ease;
 }
 .slider:active::-moz-range-thumb{ transform: scale(0.96); }
-  .label{ font-size:17px; font-weight:600; line-height:24px; margin:6px 0 10px; }
-  .iprow{ display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+  .label{ font-size:16px; font-weight:600; line-height:22px; margin:4px 0 8px; }
+  .iprow{ display:flex; align-items:center; gap:8px; margin-bottom:8px; }
   .ip{
-    flex:1; height:44px; border-radius:8px;
+    flex:1; height:40px; border-radius:8px;
     border:1px solid var(--border-strong); background:#fff;
-    color:var(--muted); padding:0 14px;
-    font-size:15px;
+    color:var(--muted); padding:0 12px;
+    font-size:14px;
   }
 
   /* Buttons */
   .btn{
-    height:48px; padding:0 24px;
+    height:44px; padding:0 22px;
     border-radius:8px; border:1px solid var(--border-strong);
     background:#fff; display:inline-flex; align-items:center; gap:10px;
-    font-size:15.5px; font-weight:600;
+    font-size:14.5px; font-weight:600;
   }
 
   /* ===== BACKUP styles ===== */
   .backup-row{
-    display:flex; gap:12px; align-items:center; margin-top:10px; flex-wrap:wrap;
+    display:flex; gap:10px; align-items:center; margin-top:6px; flex-wrap:wrap;
   }
   .holdbtn{
     position:relative;
-    height:54px; padding:0 18px;
+    height:48px; padding:0 16px;
     border:1px solid var(--border-strong); border-radius:8px;
     background:#fff;
     display:inline-flex; align-items:center; gap:10px;
-    font-size:16px;
+    font-size:14.5px;
   }
   /* small circular progress indicator */
   .holdbtn .ring{
-    width:20px; height:20px; border-radius:999px; flex:0 0 20px;
+    width:18px; height:18px; border-radius:999px; flex:0 0 18px;
     background: conic-gradient(var(--brand) calc(var(--p,0)*1*1turn), #eee 0);
     transition: background .05s linear;
   }
   .stamp{
     flex:1 1 280px;
-    height:44px;
+    height:40px;
     border-radius:10px;
     border:1px solid var(--border-strong);
-    padding:0 14px;
+    padding:0 12px;
     color:var(--muted);
-    font-size:15px;
+    font-size:14px;
     background:#fff;
-  }
-
-  @media (min-width: 900px){
-    .card--backup{
-      justify-content:space-between;
-      gap:18px;
-    }
-    .card--logs{
-      justify-content:space-between;
-    }
   }
 </style>
