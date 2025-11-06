@@ -1,28 +1,52 @@
 ﻿<script lang="ts">
-  // Demo values – wire to your data later
-  let asrsId = 'ASRS-2025-001';
-  let runtime = '00:08:20';
-  let timestamp = '11/03/2025, 06:38:08';
-  let language: 'en' | 'ar' = 'en';
-  let brightness = 60; // percent
-  let activeLogTab: 'all' | 'error' | 'operation' = 'all';
+  $effect(() => {
+    if (typeof window === 'undefined') return;
+
+    const handleWheel = (event: WheelEvent) => {
+      if (event.ctrlKey || event.metaKey) {
+        event.preventDefault();
+      }
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && ['+', '-', '=', '_', '0'].includes(event.key)) {
+        event.preventDefault();
+      }
+    };
+
+    window.addEventListener('wheel', handleWheel, { passive: false });
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('wheel', handleWheel);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  });
+
+  // Demo values - wire to your data later
+  const asrsId = $state('ASRS-2025-001');
+  const runtime = $state('00:08:20');
+  const timestamp = $state('11/03/2025, 06:38:08');
+  let language = $state<'en' | 'ar'>('en');
+  let brightness = $state(60); // percent
+  let activeLogTab = $state<'all' | 'error' | 'operation'>('all');
 
   // Backup timestamps (simulate persistence)
-  let storeTimestamp = '— —';
-  let restoreTimestamp = '— —';
+  let storeTimestamp = $state('- -');
+  let restoreTimestamp = $state('- -');
 
   // Hold-to-activate logic (2 seconds)
   const HOLD_MS = 2000;
-  let storeTimer: any = null;
-  let restoreTimer: any = null;
-  let storeProgress = 0;    // 0..1
-  let restoreProgress = 0;  // 0..1
+  let storeTimer: ReturnType<typeof setInterval> | null = null;
+  let restoreTimer: ReturnType<typeof setInterval> | null = null;
+  let storeProgress = $state(0);    // 0..1
+  let restoreProgress = $state(0);  // 0..1
 
   function nowString() {
     return new Date().toLocaleString();
   }
 
-  function startHold(kind: 'store'|'restore') {
+  function startHold(kind: 'store' | 'restore') {
     cancelHold(kind); // reset
     const t0 = Date.now();
     const tick = () => {
@@ -41,7 +65,7 @@
     if (kind === 'store') storeTimer = id; else restoreTimer = id;
   }
 
-  function cancelHold(kind: 'store'|'restore') {
+  function cancelHold(kind: 'store' | 'restore') {
     if (kind === 'store') {
       if (storeTimer) clearInterval(storeTimer);
       storeTimer = null;
@@ -54,14 +78,23 @@
   }
 
   // Build a colored track like your Figma rectangles
-  $: sliderStyle = `
+  const sliderStyle = $derived(`
     background: linear-gradient(90deg,
       var(--brand) 0%,
       var(--brand) ${brightness}%,
       var(--track-rest) ${brightness}%,
       var(--track-rest) 100%);
-  `;
+  `);
 </script>
+
+<svelte:head>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Noto+Sans+Arabic:wght@400;600&display=swap"
+  />
+</svelte:head>
 
 <!-- Responsive wrapper: centers up to 1024px, breathes on small screens -->
 <div class="page">
@@ -93,7 +126,7 @@
       </div>
 
       <div class="row gap lang-toggle" class:lang-en={language==='en'} class:lang-ar={language==='ar'}>
-        <button type="button" class="pill pressable {language==='en' ? 'pill--active' : ''}" aria-pressed={language==='en'} on:click={() => language='en'}>
+        <button type="button" class="pill pressable {language==='en' ? 'pill--active' : ''}" aria-pressed={language==='en'} onclick={() => (language = 'en')}>
           <span class="pill-dot">
             <img src="/assets/check.svg" alt="" width="14" height="14" />
           </span>
@@ -104,7 +137,7 @@
           type="button"
           class="pill pressable {language==='ar' ? 'pill--active' : ''}"
           aria-pressed={language==='ar'}
-          on:click={() => language='ar'}
+          onclick={() => (language = 'ar')}
         >
           <span class="pill-dot">
             <img src="/assets/check.svg" alt="" width="14" height="14" />
@@ -180,10 +213,10 @@
         <button
           class="holdbtn pressable"
           style={`--p:${storeProgress}`}
-          on:pointerdown={() => startHold('store')}
-          on:pointerup={() => cancelHold('store')}
-          on:pointerleave={() => cancelHold('store')}
-          on:pointercancel={() => cancelHold('store')}
+          onpointerdown={() => startHold('store')}
+          onpointerup={() => cancelHold('store')}
+          onpointerleave={() => cancelHold('store')}
+          onpointercancel={() => cancelHold('store')}
         >
           <span class="ring" aria-hidden="true"></span>
           <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
@@ -202,10 +235,10 @@
         <button
           class="holdbtn pressable"
           style={`--p:${restoreProgress}`}
-          on:pointerdown={() => startHold('restore')}
-          on:pointerup={() => cancelHold('restore')}
-          on:pointerleave={() => cancelHold('restore')}
-          on:pointercancel={() => cancelHold('restore')}
+          onpointerdown={() => startHold('restore')}
+          onpointerup={() => cancelHold('restore')}
+          onpointerleave={() => cancelHold('restore')}
+          onpointercancel={() => cancelHold('restore')}
         >
           <span class="ring" aria-hidden="true"></span>
           <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
@@ -233,7 +266,7 @@
           type="button"
           class="pill pressable {activeLogTab === 'all' ? 'pill--active' : ''}"
           aria-pressed={activeLogTab === 'all'}
-          on:click={() => (activeLogTab = 'all')}
+          onclick={() => (activeLogTab = 'all')}
         >
           All logs
         </button>
@@ -241,7 +274,7 @@
           type="button"
           class="pill pressable {activeLogTab === 'error' ? 'pill--active' : ''}"
           aria-pressed={activeLogTab === 'error'}
-          on:click={() => (activeLogTab = 'error')}
+          onclick={() => (activeLogTab = 'error')}
         >
           Error logs
         </button>
@@ -249,7 +282,7 @@
           type="button"
           class="pill pressable {activeLogTab === 'operation' ? 'pill--active' : ''}"
           aria-pressed={activeLogTab === 'operation'}
-          on:click={() => (activeLogTab = 'operation')}
+          onclick={() => (activeLogTab = 'operation')}
         >
           Operation logs
         </button>
@@ -271,6 +304,39 @@
 </div>
 
 <style>
+  :global(html, body){ height:100%; margin:0; padding:0; }
+  :global(*), :global(*::before), :global(*::after){ box-sizing:border-box; }
+
+  :global(:root){
+    --ink:#111;
+    --muted:rgba(0,0,0,.68);
+    --brand:#E54817;
+    --track-rest:rgba(0,0,0,.30);
+    --border:rgba(0,0,0,.08);
+    --border-strong:rgba(0,0,0,.30);
+    --ring:rgba(229,72,23,.35);
+    --ui-scale:1.9;
+  }
+
+  :global(body){
+    font:16px/1.35 "Inter", system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+    color:var(--ink);
+    background:#fff;
+    overflow:hidden;
+  }
+
+  :global(button){
+    cursor:pointer;
+    font:inherit;
+    color:inherit;
+    background:#fff;
+    border:1px solid transparent;
+  }
+
+  :global(input){
+    font:inherit;
+  }
+
   /* Responsive canvas */
   .page{
     width: calc(100vw / var(--ui-scale));
@@ -302,10 +368,21 @@
     width:40px; height:40px; display:grid; place-items:center;
     border:1px solid var(--muted); border-radius:8px; background:#fff;
   }
-  .titleblock{ flex:1; }
-  .meta{ margin-top:10px; font-size:15px; }
-  .h1{ font-size: clamp(30px, 3vw, 36px); line-height:1.1; margin:0; }
-  .h2{ font-size: clamp(19px, 2.2vw, 24px); margin:0; }
+    .titleblock{ flex:1; }
+    .meta{ margin-top:10px; font-size:15px; }
+    .h1{ font-size: clamp(30px, 3vw, 36px); line-height:1.1; margin:0; }
+    .h2{ font-size: clamp(19px, 2.2vw, 24px); margin:0; }
+    .muted{ color:var(--muted); }
+    .strong{ font-weight:700; }
+    .icon{ width:24px; height:24px; display:inline-block; }
+    .pressable{
+      transition:transform .12s ease, box-shadow .12s ease, border-color .12s ease, background-color .12s ease, color .12s ease;
+    }
+    .pressable:hover{
+      box-shadow:0 1px 2px rgba(0,0,0,.06), 0 4px 12px rgba(0,0,0,.08);
+    }
+    .pressable:active{ transform:translateY(1px) scale(.98); }
+    .pressable:focus-visible{ outline:2px solid var(--ring); outline-offset:2px; }
 
   .rule{
     margin: 10px 0 8px;
